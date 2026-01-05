@@ -1,0 +1,25 @@
+.layout-container {
+  display: flex;
+}
+
+.main-content {
+  /* VERSION BUREAU  */
+  margin-left: 250px; /* Correspond à la largeur de la sidebar bureau */
+  width: calc(100% - 250px);
+  min-height: 100vh;
+  min-height: 100dvh; /* Meilleur support mobile */
+  background-color: #f8fafc;
+  padding: 40px;
+
+  /* Ajoute une transition pour que le contenu glisse en même temps que la barre */
+  transition: margin-left 0.3s ease, width 0.3s ease, padding 0.3s ease;
+}
+
+/* --- VERSION MOBILE (Tablettes et Téléphones) --- */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+    padding: 20px;
+  }
+}

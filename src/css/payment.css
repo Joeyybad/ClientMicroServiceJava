@@ -1,0 +1,70 @@
+/* src/pages/PaymentPage.css */
+.payment-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+
+  background-color: #f4f4f9;
+}
+
+.payment-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.payment-header h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.amount-display {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 20px 0;
+}
+
+.payment-btn {
+  background-color: #28a745; /* Vert succès */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s;
+}
+
+.payment-btn:hover {
+  background-color: #218838;
+}
+
+.payment-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.status-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.status-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}

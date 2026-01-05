@@ -1,0 +1,25 @@
+/* src/index.css */
+
+/* 1. On dit à tous les éléments de ne pas ajouter de largeur surprise avec les bordures */
+* {
+  box-sizing: border-box;
+}
+
+/* 2. On configure le corps de la page pour prendre tout l'écran */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Arial", sans-serif; /* Police simple et propre */
+  background-color: #f4f4f9; /* Gris très clair, agréable à l'œil */
+}
+
+/* 3. On configure la racine de React pour qu'elle puisse s'étendre */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
