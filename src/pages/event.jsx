@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { API_BASE_URL } from "../services/api";
+import PaymentModal from "../components/ui/PaymentModal";
 import "../css/events.css";
 
 function Event() {
@@ -10,12 +11,13 @@ function Event() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPaymentModalOpen, setPaymentModalOpen] = useState(false);
 
   // Gestion du formulaire et des étapes
   const [email, setEmail] = useState(
     () => localStorage.getItem("userEmail") || ""
   );
-  const [registrationData, setRegistrationData] = useState(null); // Stockera l'inscription créée (ID, statut...)
+  const [registrationData, setRegistrationData] = useState(null);
   const [step, setStep] = useState(0); // 0 = Inscription, 1 = Paiement, 2 = Terminé
   const [feedback, setFeedback] = useState("");
 
@@ -67,18 +69,22 @@ function Event() {
   };
 
   // --- ÉTAPE 2 : Paiement service ---
-  const handlePayment = () => {
+  const handlePaymentConfirm = () => {
     if (!registrationData) return;
 
+    setPaymentModalOpen(false);
+
+    // Préparation des données
     const paymentPayload = {
-      registrationId: registrationData.id, // On envoie l'ID de l'inscription pour faire le lien
+      registrationId: registrationData.id,
       montant: event.prix,
       devise: "EUR",
+      // Si besoin des infos de carte (token), tu peux les ajouter ici :
+      // cardHolder: cardData.name
     };
 
     console.log("Envoi au service paiement...", paymentPayload);
 
-    // A remplacer par le fetch du paiement service
     fetch(`http://localhost:8081/payments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -87,7 +93,7 @@ function Event() {
       .then((res) => res.json())
       .then((paymentResponse) => {
         console.log("Paiement réussi", paymentResponse);
-        setStep(2);
+        setStep(2); // On passe à l'écran de succès
         setFeedback("✅ Paiement validé ! Votre inscription est confirmée.");
       })
       .catch((err) => {
@@ -165,21 +171,17 @@ function Event() {
 
             {/* Etape 1  Bouton de Paiement Apparaît seulement après inscription */}
             {step === 1 && (
-              <div
-                className="payment-area"
-                style={{ animation: "fadeIn 0.5s" }}
-              >
-                <p style={{ marginBottom: 15 }}>
-                  Place réservée (N°{registrationData.id}).
-                  <br />
-                  Montant à régler : <strong>{event.prix} €</strong>
+              <div className="payment-area">
+                <p>
+                  Place réservée. Montant à régler :{" "}
+                  <strong>{event.prix} €</strong>
                 </p>
 
-                {/* Paiement Service */}
+                {/* ATTENTION : On ne lance plus le fetch, on ouvre juste la modale */}
                 <button
                   className="btn-primary-large"
                   style={{ backgroundColor: "#16a34a" }}
-                  onClick={handlePayment}
+                  onClick={() => setPaymentModalOpen(true)} // <--- CLIC ICI
                 >
                   💳 Payer maintenant
                 </button>
@@ -188,15 +190,60 @@ function Event() {
 
             {/* ÉTAPE 2 : Succès Final */}
             {step === 2 && (
-              <div className="success-area">
-                <h3>🎉 Félicitations !</h3>
-                <p>Vous êtes inscrit et le paiement est validé.</p>
-                <button
-                  className="btn-detail"
-                  onClick={() => (window.location.href = "/my-registrations")}
+              <div
+                className="success-area"
+                style={{ textAlign: "center", animation: "fadeIn 0.5s" }}
+              >
+                <div style={{ fontSize: "3rem", marginBottom: "10px" }}>🎉</div>
+                <h3>Félicitations !</h3>
+                <p>Votre inscription est confirmée.</p>
+
+                {/* --- Service NOTIFICATION --- */}
+                <p
+                  style={{
+                    color: "#64748b",
+                    fontSize: "0.9rem",
+                    margin: "20px 0",
+                  }}
                 >
-                  Voir mon billet
-                </button>
+                  Un email de confirmation a été envoyé à{" "}
+                  <strong>{email}</strong>.
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    justifyContent: "center",
+                    marginTop: "20px",
+                  }}
+                >
+                  {/* Bouton retour liste */}
+                  <button
+                    className="btn-detail"
+                    onClick={() => (window.location.href = "/my-registrations")}
+                  >
+                    Voir mes billets
+                  </button>
+
+                  {/* --- Service FACTURATION --- */}
+
+                  <button
+                    className="btn-detail"
+                    style={{
+                      backgroundColor: "#e2e8f0",
+                      color: "#334155",
+                      border: "1px solid #cbd5e1",
+                    }}
+                    onClick={() =>
+                      alert(
+                        "Le téléchargement de la facture sera disponible une fois le microservice Facturation connecté."
+                      )
+                    }
+                  >
+                    📄 Télécharger la facture
+                  </button>
+                </div>
               </div>
             )}
 
@@ -217,6 +264,13 @@ function Event() {
           </div>
         </div>
       </div>
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onConfirm={handlePaymentConfirm}
+        amount={event ? event.prix : 0}
+        eventTitle={event ? event.titre : ""}
+      />
     </div>
   );
 }
